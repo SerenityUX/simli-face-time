@@ -31,12 +31,23 @@ struct ContentView: View {
                     image
                         .resizable()
                         .aspectRatio(contentMode: .fit)
-                        .frame(width: 50, height: 50)
+                        .frame(width: 42, height: 42)
                         .clipShape(Circle())
                 } placeholder: {
                     ProgressView()
-                        .frame(width: 50, height: 50)
+                        .frame(width: 42, height: 42)
                 }
+                VStack(alignment: .leading) {
+                    Text(Contact.example.name)
+                        .bold()
+                    Text(Contact.example.oneLiner)
+                        .opacity(0.6)
+                }
+                Spacer()
+            Image(systemName: "phone.fill")
+                .foregroundColor(.black.opacity(0.6))
+                .font(.title2)
+                .padding(.trailing, 8)
             }
         }
         .frame(width: 300)

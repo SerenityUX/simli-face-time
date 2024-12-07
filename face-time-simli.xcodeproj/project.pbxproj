@@ -23,6 +23,7 @@
 		433318D22D04CEF700DBBA2F /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		433318D42D04CEF700DBBA2F /* face_time_simli.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = face_time_simli.entitlements; sourceTree = "<group>"; };
 		433318DA2D04D0BE00DBBA2F /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
+		433318DF2D04E58400DBBA2F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -56,6 +57,7 @@
 		433318CA2D04CEF600DBBA2F /* face-time-simli */ = {
 			isa = PBXGroup;
 			children = (
+				433318DF2D04E58400DBBA2F /* Info.plist */,
 				433318CB2D04CEF600DBBA2F /* face_time_simliApp.swift */,
 				433318DA2D04D0BE00DBBA2F /* WindowManager.swift */,
 				433318CD2D04CEF600DBBA2F /* ContentView.swift */,
@@ -291,6 +293,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "face-time-simli/Info.plist";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -319,6 +322,7 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "face-time-simli/Info.plist";
 				INFOPLIST_KEY_LSUIElement = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
