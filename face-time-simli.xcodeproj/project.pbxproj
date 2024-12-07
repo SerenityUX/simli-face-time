@@ -13,6 +13,11 @@
 		433318D32D04CEF700DBBA2F /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 433318D22D04CEF700DBBA2F /* Preview Assets.xcassets */; };
 		433318DB2D04D0BE00DBBA2F /* WindowManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433318DA2D04D0BE00DBBA2F /* WindowManager.swift */; };
 		433318DE2D04D11000DBBA2F /* HotKey in Frameworks */ = {isa = PBXBuildFile; productRef = 433318DD2D04D11000DBBA2F /* HotKey */; };
+		433318E32D04FE2C00DBBA2F /* ContactStateManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433318E22D04FE2C00DBBA2F /* ContactStateManager.swift */; };
+		433318E52D05023D00DBBA2F /* calling_sound.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 433318E42D05023D00DBBA2F /* calling_sound.mp3 */; };
+		433318E72D05043900DBBA2F /* answer.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 433318E62D05043900DBBA2F /* answer.mp3 */; };
+		433318E92D05057200DBBA2F /* WebRTCClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 433318E82D05057200DBBA2F /* WebRTCClient.swift */; };
+		433318EC2D05062300DBBA2F /* WebRTC in Frameworks */ = {isa = PBXBuildFile; productRef = 433318EB2D05062300DBBA2F /* WebRTC */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,6 +29,10 @@
 		433318D42D04CEF700DBBA2F /* face_time_simli.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = face_time_simli.entitlements; sourceTree = "<group>"; };
 		433318DA2D04D0BE00DBBA2F /* WindowManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WindowManager.swift; sourceTree = "<group>"; };
 		433318DF2D04E58400DBBA2F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		433318E22D04FE2C00DBBA2F /* ContactStateManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactStateManager.swift; sourceTree = "<group>"; };
+		433318E42D05023D00DBBA2F /* calling_sound.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = calling_sound.mp3; sourceTree = "<group>"; };
+		433318E62D05043900DBBA2F /* answer.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = answer.mp3; sourceTree = "<group>"; };
+		433318E82D05057200DBBA2F /* WebRTCClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WebRTCClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -32,6 +41,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				433318DE2D04D11000DBBA2F /* HotKey in Frameworks */,
+				433318EC2D05062300DBBA2F /* WebRTC in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -59,8 +69,12 @@
 			children = (
 				433318DF2D04E58400DBBA2F /* Info.plist */,
 				433318CB2D04CEF600DBBA2F /* face_time_simliApp.swift */,
+				433318E22D04FE2C00DBBA2F /* ContactStateManager.swift */,
 				433318DA2D04D0BE00DBBA2F /* WindowManager.swift */,
 				433318CD2D04CEF600DBBA2F /* ContentView.swift */,
+				433318E42D05023D00DBBA2F /* calling_sound.mp3 */,
+				433318E82D05057200DBBA2F /* WebRTCClient.swift */,
+				433318E62D05043900DBBA2F /* answer.mp3 */,
 				433318CF2D04CEF700DBBA2F /* Assets.xcassets */,
 				433318D42D04CEF700DBBA2F /* face_time_simli.entitlements */,
 				433318D12D04CEF700DBBA2F /* Preview Content */,
@@ -94,6 +108,7 @@
 			name = "face-time-simli";
 			packageProductDependencies = (
 				433318DD2D04D11000DBBA2F /* HotKey */,
+				433318EB2D05062300DBBA2F /* WebRTC */,
 			);
 			productName = "face-time-simli";
 			productReference = 433318C82D04CEF600DBBA2F /* face-time-simli.app */;
@@ -125,6 +140,7 @@
 			mainGroup = 433318BF2D04CEF600DBBA2F;
 			packageReferences = (
 				433318DC2D04D11000DBBA2F /* XCRemoteSwiftPackageReference "HotKey" */,
+				433318EA2D05062300DBBA2F /* XCRemoteSwiftPackageReference "WebRTC" */,
 			);
 			productRefGroup = 433318C92D04CEF600DBBA2F /* Products */;
 			projectDirPath = "";
@@ -140,8 +156,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				433318E72D05043900DBBA2F /* answer.mp3 in Resources */,
 				433318D32D04CEF700DBBA2F /* Preview Assets.xcassets in Resources */,
 				433318D02D04CEF700DBBA2F /* Assets.xcassets in Resources */,
+				433318E52D05023D00DBBA2F /* calling_sound.mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -152,6 +170,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				433318E32D04FE2C00DBBA2F /* ContactStateManager.swift in Sources */,
+				433318E92D05057200DBBA2F /* WebRTCClient.swift in Sources */,
 				433318CE2D04CEF600DBBA2F /* ContentView.swift in Sources */,
 				433318CC2D04CEF600DBBA2F /* face_time_simliApp.swift in Sources */,
 				433318DB2D04D0BE00DBBA2F /* WindowManager.swift in Sources */,
@@ -369,6 +389,14 @@
 				kind = branch;
 			};
 		};
+		433318EA2D05062300DBBA2F /* XCRemoteSwiftPackageReference "WebRTC" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stasel/WebRTC.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 130.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -376,6 +404,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 433318DC2D04D11000DBBA2F /* XCRemoteSwiftPackageReference "HotKey" */;
 			productName = HotKey;
+		};
+		433318EB2D05062300DBBA2F /* WebRTC */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 433318EA2D05062300DBBA2F /* XCRemoteSwiftPackageReference "WebRTC" */;
+			productName = WebRTC;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
