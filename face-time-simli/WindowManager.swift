@@ -1,4 +1,5 @@
 import SwiftUI
+import WebKit
 import AppKit
 import AVFoundation
 import AVKit
@@ -38,11 +39,24 @@ class CallWindow: NSWindow {
 }
 
 class FocusableHostingView<Content: View>: NSHostingView<Content>, WebRTCClientDelegate {
+    func webRTCClient(_ client: WebRTCClient, didSetupWebView webView: WKWebView) {
+            // Add WebView to your view hierarchy
+            webView.translatesAutoresizingMaskIntoConstraints = false
+            self.addSubview(webView)
+            
+            NSLayoutConstraint.activate([
+                webView.topAnchor.constraint(equalTo: self.topAnchor),
+                webView.leadingAnchor.constraint(equalTo: self.leadingAnchor),
+                webView.trailingAnchor.constraint(equalTo: self.trailingAnchor),
+                webView.bottomAnchor.constraint(equalTo: self.bottomAnchor)
+            ])
+        }
+    
     var onEsc: () -> Void = {}
     override var acceptsFirstResponder: Bool { true }
     private var detailWindow: NSWindow?
     private var audioPlayer: AVAudioPlayer?
-    private var webRTCClient: WebRTCClient?
+    public var rtcClient: WebRTCClient?
     private var videoTrack: RTCVideoTrack?
     private var videoView: AVPlayerView?
     private var player: AVPlayer?
@@ -68,8 +82,8 @@ class FocusableHostingView<Content: View>: NSHostingView<Content>, WebRTCClientD
                 print("Found sound URL: \(soundURL)")
                 do {
                     audioPlayer = try AVAudioPlayer(contentsOf: soundURL)
-                    audioPlayer?.numberOfLoops = -1  // -1 means infinite loop
-                    audioPlayer?.volume = 1.0  // Ensure full volume
+                    audioPlayer?.numberOfLoops = 0  // Changed from -1 to 0 to play only once
+                    audioPlayer?.volume = 1.0
                     let didPlay = audioPlayer?.play() ?? false
                     print("Audio player started: \(didPlay)")
                 } catch {
@@ -184,14 +198,26 @@ class FocusableHostingView<Content: View>: NSHostingView<Content>, WebRTCClientD
                 window.close()
             }
             
-            webRTCClient = WebRTCClient()
-            webRTCClient?.delegate = self
-            webRTCClient?.startCall(with: "156e758d-5823-4d45-bb76-337188e70880")
+            rtcClient = WebRTCClient()
+            rtcClient?.delegate = self
+            rtcClient?.startCall(
+                with: selectedContact.faceID,
+                firstMessage: "Hey \(selectedContact.name)! Great to talk again.",
+                systemPrompt: selectedContact.systemPrompt,
+                voiceId: selectedContact.voiceID
+            )
             
         case 126: // Up arrow
             NotificationCenter.default.post(name: NSNotification.Name("MoveSelection"), object: true)
         case 125: // Down arrow
             NotificationCenter.default.post(name: NSNotification.Name("MoveSelection"), object: false)
+        case 53: // ESC key
+            detailWindow?.close()
+            audioPlayer?.stop()
+            rtcClient?.cleanup()
+            rtcClient = nil
+            player?.pause()
+            player = nil
         default:
             super.keyDown(with: event)
         }
@@ -199,7 +225,11 @@ class FocusableHostingView<Content: View>: NSHostingView<Content>, WebRTCClientD
     
     deinit {
         detailWindow?.close()
-        audioPlayer?.stop()  // Make sure to stop audio when view is destroyed
+        audioPlayer?.stop()
+        rtcClient?.cleanup()
+        rtcClient = nil
+        player?.pause()
+        player = nil
     }
     
     // Add WebRTCClientDelegate methods
@@ -450,7 +480,13 @@ class WindowManager: ObservableObject {
     
     func toggleWindow() {
         if let window = window, window.isVisible {
-                window.close()
+            if let hostingView = window.contentView?.subviews.first(where: { $0 is FocusableHostingView<ContentView> }) as? FocusableHostingView<ContentView> {
+                if let client = hostingView.rtcClient {
+                    client.cleanup()
+                }
+                hostingView.rtcClient = nil
+            }
+            window.close()
         } else {
             showWindow()
         }

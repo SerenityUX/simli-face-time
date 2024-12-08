@@ -8,14 +8,6 @@
 import SwiftUI
 import Foundation
 
-public struct Contact: Identifiable {
-    public let id = UUID()
-    public let name: String
-    public let profilePictureURL: URL
-    public let oneLiner: String
-    public let faceID: String
-    public var isSelected: Bool
-}
 
 public struct ContentView: View {
     @StateObject private var stateManager = ContactStateManager.shared

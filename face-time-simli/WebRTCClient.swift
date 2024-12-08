@@ -9,6 +9,7 @@ import Foundation
 import WebRTC
 import AVFoundation
 import CoreAudio
+import WebKit
 
 protocol WebRTCClientDelegate: AnyObject {
     func webRTCClient(_ client: WebRTCClient, didReceiveHLSURL url: String)
@@ -16,6 +17,7 @@ protocol WebRTCClientDelegate: AnyObject {
     func webRTCClient(_ client: WebRTCClient, didReceiveRemoteVideoTrack track: RTCVideoTrack?)
     func webRTCClient(_ client: WebRTCClient, didRemoveRemoteVideoTrack track: RTCVideoTrack?)
     func webRTCClient(_ client: WebRTCClient, didReceiveMP4URL url: String)
+    func webRTCClient(_ client: WebRTCClient, didSetupWebView webView: WKWebView)
 }
 
 class WebRTCClient: NSObject {
@@ -36,6 +38,8 @@ class WebRTCClient: NSObject {
     private var isConnected = false
     
     private static let API_KEY = "iozki0y5sujs44kraqcmf"
+    
+    private var webView: WKWebView?
     
     override init() {
         let config = RTCConfiguration()
@@ -62,10 +66,13 @@ class WebRTCClient: NSObject {
         self.createMediaSenders()
     }
     
-    func startCall(with faceId: String) {
-        self.createOffer { [weak self] sdp in
-            self?.sendOfferToSignalingServer(sdp: sdp, faceId: faceId)
-        }
+    func startCall(with faceId: String, firstMessage: String, systemPrompt: String, voiceId: String) {
+        startE2ESession(
+            faceId: faceId,
+            firstMessage: firstMessage,
+            systemPrompt: systemPrompt,
+            voiceId: voiceId
+        )
     }
     
     private func configureAudioSession() {
@@ -257,6 +264,25 @@ class WebRTCClient: NSObject {
                     print("EUREKA! Got MP4 URL: \(mp4Url)")
                     DispatchQueue.main.async {
                         self?.delegate?.webRTCClient(self!, didReceiveMP4URL: mp4Url)
+                        
+                        // Setup WebView if not already setup
+                        if self?.webView == nil {
+                            self?.setupWebView()
+                        }
+                        
+                        // Load video in WebView
+                        if let url = URL(string: mp4Url) {
+                            let html = """
+                            <html>
+                            <body style="margin:0;padding:0;">
+                                <video id="videoPlayer" style="width:100%;height:100%;object-fit:cover;" autoplay playsinline>
+                                    <source src="\(mp4Url)" type="video/mp4">
+                                </video>
+                            </body>
+                            </html>
+                            """
+                            self?.webView?.loadHTMLString(html, baseURL: url)
+                        }
                     }
                 }
             }
@@ -268,6 +294,14 @@ class WebRTCClient: NSObject {
         isConnected = false
         webSocketTask?.cancel(with: .goingAway, reason: nil)
         webSocketTask = nil
+        
+        // Cleanup audio tracks and peer connection
+        localAudioTrack = nil
+        peerConnection.close()
+        
+        // Cleanup WebView
+        webView?.loadHTMLString("", baseURL: nil)
+        webView = nil
     }
     
     func handleAudioStreamResponse(_ json: [String: Any]) {
@@ -278,6 +312,94 @@ class WebRTCClient: NSObject {
                 self.delegate?.webRTCClient(self, didReceiveMP4URL: mp4Url)
             }
         }
+    }
+    
+    private func setupWebView() {
+        let configuration = WKWebViewConfiguration()
+//        configuration.allowsInlineMediaPlayback = true
+        configuration.mediaTypesRequiringUserActionForPlayback = .all
+        
+        webView = WKWebView(frame: .zero, configuration: configuration)
+        webView?.configuration.defaultWebpagePreferences.allowsContentJavaScript = true
+        
+        if let webView = webView {
+            DispatchQueue.main.async {
+                self.delegate?.webRTCClient(self, didSetupWebView: webView)
+            }
+        }
+    }
+    
+    func startE2ESession(faceId: String, firstMessage: String, systemPrompt: String, voiceId: String) {
+        guard let url = URL(string: "https://api.simli.ai/startE2ESession") else {
+            print("Invalid URL")
+            return
+        }
+        
+        let parameters: [String: Any] = [
+            "apiKey": WebRTCClient.API_KEY,
+            "faceId": faceId,
+            "voiceId": voiceId,
+            "firstMessage": firstMessage,
+            "systemPrompt": systemPrompt
+        ]
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        do {
+            request.httpBody = try JSONSerialization.data(withJSONObject: parameters)
+        } catch {
+            print("Failed to serialize parameters: \(error)")
+            return
+        }
+        
+        URLSession.shared.dataTask(with: request) { [weak self] data, response, error in
+            if let error = error {
+                print("Network error: \(error)")
+                return
+            }
+            
+            guard let data = data else {
+                print("No data received")
+                return
+            }
+            
+            do {
+                if let json = try JSONSerialization.jsonObject(with: data) as? [String: Any],
+                   let roomUrl = json["roomUrl"] as? String {
+                    print("Received room URL: \(roomUrl)")
+                    
+                    // Open URL in default browser and close app windows
+                    if let url = URL(string: roomUrl) {
+                        DispatchQueue.main.async {
+                            NSWorkspace.shared.open(url)
+                            
+                            // Close all windows
+                            NSApplication.shared.windows.forEach { window in
+                                window.close()
+                            }
+                            
+                            // Clean up WebRTC resources
+                            self?.cleanup()
+                        }
+                    }
+                    
+                    // Setup WebView with the room URL
+                    DispatchQueue.main.async {
+                        if self?.webView == nil {
+                            self?.setupWebView()
+                        }
+                        
+                        if let url = URL(string: roomUrl) {
+                            self?.webView?.load(URLRequest(url: url))
+                        }
+                    }
+                }
+            } catch {
+                print("Failed to parse response: \(error)")
+            }
+        }.resume()
     }
 }
 
